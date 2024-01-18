@@ -50,18 +50,22 @@
                             <?php
                             session_start();
                             include('./config/cnxDb.php');
+                            include('User.php');
 
                             if (isset($_POST['submitBtn'])) {
                                 $userName =  $_POST['userName'];
                                 $password = $_POST['password'];
                                 $created_at = date('Y-m-d H:i:s');
+                                $user = new User($userName, $password, $created_at);
 
-                                if (!$userName || !$password) {
+                                if (!$user->getUserName() || !$user->getPassword()) {
                                     // Verification que les champs obligatoires sont remplis
                                     $_SESSION['toastMessage'] = "Veuillez remplir tous les champs.";
                                 } else {
                                     // Verification que le username saisie existe dans la abase de donnee
-                                    $checkUserQuery = "SELECT * FROM users WHERE user_name = '$userName'";
+                                    $checkUserName = $user->getUserName();
+                                    $checkCreatedAt = $user->getCreatedAt();
+                                    $checkUserQuery = "SELECT * FROM users WHERE user_name = '$checkUserName'";
                                     $result = mysqli_query($connection, $checkUserQuery);
 
                                     if ($result) {
@@ -72,8 +76,8 @@
                                             $_SESSION['toastMessage'] = "The username already exists!";
                                         } else {
                                             // Register the user in the database
-                                            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-                                            $registerQuery = "INSERT INTO users (user_name, password, created_at) VALUES ('$userName', '$hashedPassword', '$created_at')";
+                                            $hashedPassword = password_hash($user->getPassword(), PASSWORD_DEFAULT);
+                                            $registerQuery = "INSERT INTO users (user_name, password, created_at) VALUES ('$checkUserName', '$hashedPassword', '$checkCreatedAt')";
 
                                             if (mysqli_query($connection, $registerQuery)) {
                                                 // Redirect to the login page
@@ -91,17 +95,6 @@
 
                                 $toastMessage = isset($_SESSION['toastMessage']) ? $_SESSION['toastMessage'] : "";
                                 unset($_SESSION['toastMessage']); // Supprimer le message de la session après utilisation
-                            }
-                            // Function to generate a random salt
-                            function generateSalt()
-                            {
-                                $length = 500; // You can adjust the length as needed
-                                $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ./$';
-                                $salt = '';
-                                for ($i = 0; $i < $length; $i++) {
-                                    $salt .= $characters[random_int(0, strlen($characters) - 1)];
-                                }
-                                return $salt;
                             }
                             ?>
                         </div>

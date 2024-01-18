@@ -72,7 +72,7 @@
                     if (password_verify($password, $userData['password'])) {
                       $_SESSION['id'] = $userData['id_user'];
                       $_SESSION['toastMessage'] = "Connected  success.";
-                      header("Location: private.php");
+                      header("Location: affichage_blog.php");
                     } else {
                       $_SESSION['toastMessage'] = "Incorrect password.";
                     }

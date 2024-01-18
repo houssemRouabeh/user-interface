@@ -28,6 +28,10 @@
             $userName = $userData['user_name'];
         }
     }
+    // Afficher le toast si présent dans la session
+
+    $toastMessage = isset($_SESSION['toastMessage']) ? $_SESSION['toastMessage'] : "";
+    unset($_SESSION['toastMessage']); // Supprimer le message de la session après utilisatio
     ?>
     <section class="ftco-section">
         <div class="container-lg">
